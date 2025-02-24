@@ -1,6 +1,7 @@
 import 'package:final_scanner_app/core/constant/app_color.dart';
 import 'package:final_scanner_app/feature/ratting/view/ratting_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Closebutton extends StatelessWidget {
   final BoxShape shape;
@@ -12,14 +13,7 @@ class Closebutton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return RatingView();
-            },
-          ),
-        );
+        Get.off(() => RatingView());
       },
       child: Container(
         height: 35,

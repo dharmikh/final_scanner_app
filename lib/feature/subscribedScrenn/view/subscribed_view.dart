@@ -5,6 +5,7 @@ import 'package:final_scanner_app/core/constant/app_image.dart';
 import 'package:final_scanner_app/core/constant/app_string.dart';
 import 'package:final_scanner_app/feature/ratting/view/ratting_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SubscribedView extends StatefulWidget {
   const SubscribedView({super.key});
@@ -65,7 +66,8 @@ class _SubscribedViewState extends State<SubscribedView> {
                   RatingSubmitButton(
                     borderRadiusGeometry: BorderRadius.circular(6),
                     onTap: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RatingView()));
+                      Get.off(() => RatingView());
+
                     },
                     text: AppString.startedText,
                   ),

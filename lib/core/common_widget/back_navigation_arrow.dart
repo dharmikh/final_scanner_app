@@ -1,5 +1,6 @@
 import 'package:final_scanner_app/core/constant/app_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomIconButton extends StatelessWidget {
   final double? iconSize;
@@ -16,7 +17,7 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-        Navigator.pop(context);
+        Get.back();
       },
       icon: Image.asset(AppImages.backArrow, width: iconSize, height: iconSize),
     );

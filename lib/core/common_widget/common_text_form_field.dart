@@ -1,3 +1,4 @@
+import 'package:final_scanner_app/core/common_widget/app_text.dart';
 import 'package:final_scanner_app/core/constant/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,41 +59,22 @@ class OutlinedTextFormFieldWidget extends StatelessWidget {
         hintText: hintText,
         hintStyle: hintStyle ?? const TextStyle(color: AppColor.greyColor50),
         // Default hint style
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(
-            color: Colors.blue,
-            width: 2.0,
-          ),
+          borderSide: BorderSide(color: AppColor.blueShad, width: 2.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(
-            color: AppColor.greyColor50,
-            width: 1.0,
-          ),
+          borderSide: const BorderSide(color: AppColor.greyColor50, width: 1.0),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(
-            color: Colors.red,
-            width: 1.0,
-          ),
+          borderSide: const BorderSide(color: AppColor.redColor, width: 1.0),
         ),
         prefixIcon: prefixWidget,
-        suffixIcon: suffixIcon != null
-            ? GestureDetector(
-          onTap: onSuffixIconTap,
-          child: Icon(suffixIcon),
-        )
-            : null,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 22.0,
-          horizontal: 12.0,
-        ),
+        suffixIcon: suffixIcon != null ? GestureDetector(onTap: onSuffixIconTap, child: Icon(suffixIcon)) : null,
+        contentPadding: const EdgeInsets.symmetric(vertical: 22.0, horizontal: 12.0),
       ),
     );
   }

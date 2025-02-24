@@ -9,6 +9,7 @@ import 'package:final_scanner_app/feature/paywall/widgets/customTPRrow.dart';
 import 'package:final_scanner_app/feature/paywall/widgets/shadermask.dart';
 import 'package:final_scanner_app/feature/paywall/widgets/subscription_process_list.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PaywallOneView extends StatefulWidget {
   const PaywallOneView({super.key});
@@ -75,7 +76,7 @@ class _PaywallOneViewState extends State<PaywallOneView> {
                   RatingSubmitButton(
                     borderRadiusGeometry: BorderRadius.circular(6),
                     onTap: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PaywallTwoView()));
+                      Get.off(() => PaywallTwoView());
                     },
                     text: AppString.trial7Text,
                   ),

@@ -1,5 +1,6 @@
 import 'package:final_scanner_app/core/constant/app_color.dart';
 import 'package:final_scanner_app/core/constant/app_string.dart';
+import 'package:final_scanner_app/feature/transaction/controller/transaction_controller.dart';
 import 'package:final_scanner_app/helper/db_helper/db_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseController extends GetxController {
+  TransactionController transactionController = Get.put(TransactionController());
+
   final List<String> currencyData = [
     AppString.oneCurrency,
     AppString.twoCurrency,
@@ -76,6 +79,8 @@ class ExpenseController extends GetxController {
           categoryImage: categoryData[selectedCategoryIndex.value]['image'],
           description: descriptionTxt.text,
         );
+        await transactionController.expensesData();
+        await transactionController.getReportData();
       } else if (pageStatus == "edit") {
         await DBHelper.instance.updateExpense(
           id: id ?? 0,
@@ -87,6 +92,8 @@ class ExpenseController extends GetxController {
           categoryImage: categoryData[selectedCategoryIndex.value]['image'],
           description: descriptionTxt.text,
         );
+        await transactionController.expensesData();
+        await transactionController.getReportData();
       }
       Fluttertoast.showToast(
         msg: "Validation passed",

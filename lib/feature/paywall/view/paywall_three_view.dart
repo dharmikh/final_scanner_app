@@ -10,6 +10,7 @@ import 'package:final_scanner_app/feature/paywall/widgets/shadermask.dart';
 import 'package:final_scanner_app/feature/paywall/widgets/subscription_process_list.dart';
 import 'package:final_scanner_app/feature/subscribedScrenn/view/subscribed_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PaywallThreeView extends StatefulWidget {
   const PaywallThreeView({super.key});
@@ -52,7 +53,7 @@ class _PaywallThreeViewState extends State<PaywallThreeView> {
                   child: RatingSubmitButton(
                     borderRadiusGeometry: BorderRadius.circular(6),
                     onTap: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SubscribedView()));
+                      Get.off(() => SubscribedView());
                     },
                     text: AppString.subscribeText,
                   ),

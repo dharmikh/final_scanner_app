@@ -31,12 +31,13 @@ class BottomNavigationView extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      resizeToAvoidBottomInset: false,
       extendBody: true,
       bottomNavigationBar: Obx(
         () => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(height: 1.0, color: AppColor.greyColor50), // Divider on top
+            Container(height: 1.0, color: AppColor.greyColor50),
             _buildBottomNavigationBar(),
           ],
         ),
