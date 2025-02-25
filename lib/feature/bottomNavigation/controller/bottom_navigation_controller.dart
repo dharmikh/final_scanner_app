@@ -1,6 +1,6 @@
 import 'package:final_scanner_app/core/constant/app_color.dart';
 import 'package:final_scanner_app/core/constant/app_string.dart';
-import 'package:final_scanner_app/feature/Report/view/report_view.dart';
+import 'package:final_scanner_app/feature/report/view/report_view.dart';
 import 'package:final_scanner_app/feature/setting/view/setting_view.dart';
 import 'package:final_scanner_app/feature/summary/view/summery_view.dart';
 import 'package:final_scanner_app/feature/transaction/view/transaction_view.dart';
@@ -14,7 +14,7 @@ import '../../transaction_type_dialogue/camera/view/custom_camera_page.dart' sho
 class BottomNavigationController extends GetxController {
   var currentIndex = 0.obs;
 
-  final List<Widget> screens = [TransactionsView(), SummaryView(), SizedBox.shrink(), ReportView(), SettingsView()];
+  final List<Widget> screens = [TransactionsView(), SummaryView(), SizedBox.shrink(), ReportsView(), SettingsView()];
 
   void onTabSelected(int index) {
     if (index == 2) return;

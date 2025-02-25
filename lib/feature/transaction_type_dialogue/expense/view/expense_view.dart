@@ -22,7 +22,7 @@ class ExpensePage extends StatelessWidget {
   final String pageStatus;
 
   const ExpensePage({
-    Key? key,
+    super.key,
     required this.pageStatus,
     this.name,
     this.price,
@@ -31,7 +31,7 @@ class ExpensePage extends StatelessWidget {
     this.currency,
     this.image,
     this.id,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

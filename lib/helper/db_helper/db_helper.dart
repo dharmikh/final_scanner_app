@@ -125,6 +125,19 @@ class DBHelper {
     );
   }
 
+  Future<void> updateExpenseReportData({required int id, required int reportId, required String status}) async {
+    final db = await database;
+    await db.update(
+      "expense",
+      {
+        "report_id": reportId,
+        "status": status,
+      },
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
   Future<void> deleteExpense({required int id}) async {
     final db = await database;
     await db.delete("expense", where: "id = ?", whereArgs: [id]);

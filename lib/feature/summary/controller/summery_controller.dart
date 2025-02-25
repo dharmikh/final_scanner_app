@@ -1,6 +1,7 @@
 import 'dart:math';
-
 import 'package:final_scanner_app/core/constant/app_color.dart';
+import 'package:final_scanner_app/feature/bottomNavigation/controller/bottom_navigation_controller.dart';
+import 'package:final_scanner_app/feature/transaction/controller/transaction_controller.dart';
 import 'package:final_scanner_app/helper/db_helper/db_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class SummaryController extends GetxController {
+  TransactionController transactionController = Get.put(TransactionController());
   RxInt currentPage = 0.obs;
   RxString selectedMonth = ''.obs;
   RxDouble totalExpense = 0.0.obs;
@@ -15,6 +17,22 @@ class SummaryController extends GetxController {
   var expenseData = <Map<String, dynamic>>[].obs;
 
   Map<String, List<Map<String, dynamic>>> expenseMapData = {};
+
+  @override
+  void onInit() {
+    super.onInit();
+    final bottomController = Get.find<BottomNavigationController>();
+    ever(bottomController.currentIndex, (index) {
+      if (index == 1) {
+        summaryData();
+      }
+    });
+    if (bottomController.currentIndex.value == 1) {
+      summaryData();
+    }
+    transactionController.expensesData();
+    summaryData();
+  }
 
   // List of months for pagination
   final List<String> orderedMonths = [
@@ -89,11 +107,11 @@ class SummaryController extends GetxController {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+            TextButton(onPressed: () => Get.back(), child: Text("Cancel")),
             TextButton(
               onPressed: () {
                 selectedMonth.value = DateFormat('MMMM').format(DateTime(selectedYear, selectedMonthValue));
-                Navigator.pop(context);
+                Get.back();
               },
               child: Text("OK"),
             ),
@@ -103,39 +121,9 @@ class SummaryController extends GetxController {
     );
   }
 
-  List<BarChartGroupData> buildBarGroups() {
-    List<BarChartGroupData> barGroups = [];
-
-    for (int i = 0; i < currentPageMonths.length; i++) {
-      String month = currentPageMonths[i];
-
-      if (!expenseMapData.containsKey(month)) continue;
-
-      totalExpense.value = expenseMapData[month]!.fold(0.0, (sum, expense) => sum + (double.parse(expense['price'])));
-
-      barGroups.add(
-        BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(
-              toY: totalExpense.value,
-              color: AppColor.primaryColor,
-              width: 15,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ],
-        ),
-      );
-    }
-    return barGroups;
-  }
-
-  double getMaxY() {
-    final currentValues = buildBarGroups().expand((group) => group.barRods).map((rod) => rod.toY).toList();
-    return currentValues.isEmpty ? 100 : currentValues.reduce((max, value) => value > max ? value : max);
-  }
-
   Future<void> summaryData() async {
+    buildBarGroups();
+    getMaxY();
     // Retrieve the expense data from the database.
     List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(await DBHelper.instance.readAllExpenses());
     if (data.isNotEmpty) {
@@ -144,24 +132,8 @@ class SummaryController extends GetxController {
       expenseData.clear();
     }
 
-    // Define all months to ensure each month appears in the final map.
-    final List<String> allMonths = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
     // Initialize the grouped data map with all months as keys.
-    Map<String, List<Map<String, dynamic>>> groupedData = {for (var month in allMonths) month: []};
+    Map<String, List<Map<String, dynamic>>> groupedData = {for (var month in orderedMonths) month: []};
 
     // Group the expense data by month.
     for (var item in expenseData) {
@@ -187,7 +159,7 @@ class SummaryController extends GetxController {
     if (expenseMapData.isNotEmpty && selectedMonth.value.isEmpty) {
       selectedMonth.value =
           expenseMapData.entries
-              .firstWhere((entry) => entry.value.isNotEmpty, orElse: () => MapEntry(allMonths.first, []))
+              .firstWhere((entry) => entry.value.isNotEmpty, orElse: () => MapEntry(orderedMonths.first, []))
               .key;
     }
 
@@ -195,46 +167,34 @@ class SummaryController extends GetxController {
     totalExpense.value = expenseMapData.values
         .expand((transactions) => transactions)
         .fold(0.0, (sum, item) => sum + double.parse(item["price"].toString()));
+
   }
 
   void chengIndex() {
-    // Clear previous results
-    result.clear();
+    final newResult = <String, String>{};
 
-    // Retrieve the month data; if data for the selected month is missing, try "january" or default to an empty list.
-    List<Map<String, dynamic>> monthData = expenseMapData[selectedMonth.value] ?? expenseMapData["january"] ?? [];
+    List<Map<String, dynamic>> monthData = expenseMapData[selectedMonth.value] ?? [];
+    Map<String, double> categoryTotals = {};
 
-    // Group the data by category name with a default value if null.
-    Map<String, List<Map<String, dynamic>>> groupedData = {};
     for (var item in monthData) {
-      // Use "unknown" if category_name is null
-      String categoryName = item['category_name'] ?? "unknown";
-      if (!groupedData.containsKey(categoryName)) {
-        groupedData[categoryName] = [];
-      }
-      groupedData[categoryName]!.add(item);
+      String category = item['category_name'] ?? "Unknown";
+      double price = double.tryParse(item['price'].toString()) ?? 0.0;
+      categoryTotals[category] = (categoryTotals[category] ?? 0) + price;
     }
 
-    // Calculate the percentage per category.
-    Map<String, double> categoryPercentages = {};
-    for (var category in groupedData.keys) {
-      double totalCategoryPrice = 0.0;
-      for (var item in groupedData[category]!) {
-        // Ensure we convert the price to a string to safely parse it
-        totalCategoryPrice += double.parse(item['price'].toString());
-      }
-      // Avoid division by zero in case grandTotal.value is zero
-      double percentage = (totalExpense.value == 0) ? 0 : (totalCategoryPrice / totalExpense.value) * 100;
-      categoryPercentages[category] = (categoryPercentages[category] ?? 0) + percentage;
+    totalExpense.value = categoryTotals.values.fold(0.0, (sum, price) => sum + price);
+
+    if (totalExpense.value > 0) {
+      newResult.addAll(
+        categoryTotals.map((category, total) {
+          double percentage = (total / totalExpense.value) * 100;
+          return MapEntry(category, "%${percentage.toStringAsFixed(2)}");
+        }),
+      );
     }
 
-    // Update the result map with formatted percentage values.
-    categoryPercentages.forEach((category, percentage) {
-      result[category] = "%${percentage.toStringAsFixed(2)}";
-    });
-
-    // Optionally print the result for debugging
-    // print(result);
+    result.value = newResult;
+    print("Updated Pie Chart Data: $newResult");
   }
 
   String formatCategory(String category) {
@@ -254,6 +214,45 @@ class SummaryController extends GetxController {
         radius: 60,
       );
     }).toList();
+  }
+
+  List<BarChartGroupData> buildBarGroups() {
+    List<BarChartGroupData> barGroups = [];
+
+    for (int i = 0; i < currentPageMonths.length; i++) {
+      String month = currentPageMonths[i];
+
+      // Fix: Ensure the key exists in the map
+      if (!expenseMapData.containsKey(month) || expenseMapData[month] == null) {
+        continue;
+      }
+
+      // Fix: Provide a default empty list if null
+      totalExpense.value =
+          expenseMapData[month]?.fold(0.0, (sum, expense) => sum! + (double.parse(expense['price']))) ?? 0.0;
+
+      barGroups.add(
+        BarChartGroupData(
+          x: i,
+          barRods: [
+            BarChartRodData(
+              toY: totalExpense.value,
+              color: AppColor.primaryColor,
+              width: 15,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ],
+        ),
+      );
+    }
+    return barGroups;
+  }
+
+  double getMaxY() {
+    final currentValues = buildBarGroups().expand((group) => group.barRods).map((rod) => rod.toY).toList();
+
+    if (currentValues.isEmpty) return 100;
+    return currentValues.reduce((max, value) => value > max ? value : max) * 1;
   }
 }
 
