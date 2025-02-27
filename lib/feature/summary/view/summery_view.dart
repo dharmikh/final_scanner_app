@@ -31,7 +31,6 @@ class _SummaryViewState extends State<SummaryView> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -248,7 +247,9 @@ class _SummaryViewState extends State<SummaryView> {
                                       ),
                                       title: Row(
                                         children: [
-                                          AppText.manRope13(text: category),
+                                          AppText.manRope13(
+                                            text: category.length > 10 ? '${category.substring(0, 10)}..' : category,
+                                          ),
                                           SizedBox(width: 3),
                                           AppText.manRope13(text: percentage),
                                         ],
@@ -281,21 +282,5 @@ class _SummaryViewState extends State<SummaryView> {
         ),
       ),
     );
-  }
-}
-
-class CategoryColorManager {
-  static final Map<String, Color> colorMap = {};
-
-  static Color getCategoryColor(String category) {
-    if (!colorMap.containsKey(category)) {
-      colorMap[category] = _getRandomColor();
-    }
-    return colorMap[category]!;
-  }
-
-  static Color _getRandomColor() {
-    Random random = Random();
-    return Color.fromARGB(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
   }
 }

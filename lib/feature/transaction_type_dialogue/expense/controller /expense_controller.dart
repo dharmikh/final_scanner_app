@@ -38,6 +38,7 @@ class ExpenseController extends GetxController {
   void onInit() {
     super.onInit();
     tabsData();
+
   }
 
   Future<void> tabsData() async {

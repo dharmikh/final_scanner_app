@@ -20,6 +20,7 @@ import 'package:share_plus/share_plus.dart';
 
 class ReportDetailView extends StatefulWidget {
   final int? id;
+  final String colorStatus;
   final String rName;
   final String cName;
   final String amount;
@@ -38,6 +39,7 @@ class ReportDetailView extends StatefulWidget {
     required this.statusImage,
     required this.date,
     this.description,
+    required this.colorStatus,
   });
 
   @override
@@ -52,6 +54,7 @@ class _ReportDetailViewState extends State<ReportDetailView> {
     await reportController.reportData();
     await transactionController.expensesData();
     reportController.fetchReportExpenses(widget.id.toString());
+    await reportController.getReportData();
   }
 
   @override
@@ -234,11 +237,16 @@ class _ReportDetailViewState extends State<ReportDetailView> {
                                             AppText.manRope16(
                                               text: widget.rName,
                                               color:
-                                                  expense['status'] == "Completed"
+                                                  widget.colorStatus == "Completed"
                                                       ? AppColor.darkGreen
-                                                      : expense['status'] == "Sent"
+                                                      : widget.colorStatus == "Sent"
                                                       ? AppColor.blueShad
                                                       : AppColor.redColor,
+                                              // expense['status'] == "Completed"
+                                              //     ? AppColor.darkGreen
+                                              //     : expense['status'] == "Sent"
+                                              //     ? AppColor.blueShad
+                                              //     : AppColor.redColor,
                                             ),
                                           ],
                                         ),
@@ -255,13 +263,7 @@ class _ReportDetailViewState extends State<ReportDetailView> {
                       }),
                     );
                   }),
-                  ExpenseBottomSheet(
-                    rName: widget.rName,
-                    status: widget.status,
-                    //data: reportController.expenseToRData.value,
-                    id: widget.id!,
-                    text: AppString.newReportText,
-                  ),
+                  ExpenseBottomSheet(id: widget.id ?? 0, text: AppString.newReportText, status: widget.status),
                 ],
               ),
             ),

@@ -58,6 +58,11 @@ class NewReportController extends GetxController {
           reportStatus: selectedStatus,
           date: formattedDate,
         );
+
+        // Refresh data in other controllers
+        await reportController.reportData();
+        await transactionController.expensesData();
+        await reportController.getReportData();
       } else if (reportPageStatus == "edit") {
         await DBHelper.instance.updateReport(
           reportName: reportNameTxt.text,
@@ -68,14 +73,21 @@ class NewReportController extends GetxController {
           date: formattedDate,
           id: id ?? 0,
         );
+
+        //await DBHelper.instance.updateExpense(id: id, name: name, price: price, date: date, currency: currency, categoryName: categoryName, categoryImage: categoryImage, description: description)
+
+        await reportController.reportData();
+        await transactionController.expensesData();
+        await reportController.getReportData();
       }
 
-      // Refresh data in other controllers
-      await reportController.reportData();
-      await transactionController.expensesData();
-      await reportController.getReportData();
+      // // Refresh data in other controllers
+      // await reportController.reportData();
+      // await transactionController.expensesData();
+      // await reportController.getReportData();
 
       // Close the current screen
+      Get.back();
       Get.back();
     }
   }

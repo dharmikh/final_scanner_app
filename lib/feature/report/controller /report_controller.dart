@@ -59,14 +59,10 @@ class ReportController extends GetxController {
       return MapEntry(
         key,
         reports.map((report) {
-          // Ensure expenses is a list
-          List expenses = report["expenses"] is List ? report["expenses"] : [];
-          int expenseCount = expenses.length;
-
           return {
             ...report,
             "total": report["total"] ?? 0,
-            //"expense_count": RxInt(expenseCount), // Use RxInt
+
           };
         }).toList(),
       );
@@ -211,6 +207,6 @@ class ReportController extends GetxController {
         };
       }).toList();
     });
-    print("Updated formattedStatusData: $formattedStatusData");
+   // print("Updated formattedStatusData: $formattedStatusData");
   }
 }

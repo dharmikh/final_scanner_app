@@ -188,13 +188,13 @@ class SummaryController extends GetxController {
       newResult.addAll(
         categoryTotals.map((category, total) {
           double percentage = (total / totalExpense.value) * 100;
-          return MapEntry(category, "%${percentage.toStringAsFixed(2)}");
+          return MapEntry(category, "%${percentage.toStringAsFixed(1)}");
         }),
       );
     }
 
     result.value = newResult;
-    print("Updated Pie Chart Data: $newResult");
+    //print("Updated Pie Chart Data: $newResult");
   }
 
   String formatCategory(String category) {
@@ -271,3 +271,6 @@ class CategoryColorManager {
     return Color.fromARGB(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
   }
 }
+
+
+

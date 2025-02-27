@@ -4,6 +4,7 @@ import 'package:final_scanner_app/core/constant/app_color.dart';
 import 'package:final_scanner_app/core/constant/app_image.dart';
 import 'package:final_scanner_app/core/constant/app_string.dart';
 import 'package:final_scanner_app/feature/transaction/controller/transaction_controller.dart';
+import 'package:final_scanner_app/feature/transaction/widget%20/report_bottom_sheet.dart';
 import 'package:final_scanner_app/helper/db_helper/db_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -240,13 +241,14 @@ class _ViewReceiptDataState extends State<ViewReceiptData> {
                 ],
               ),
             ),
-            // Obx(
-            //       () => ReportBottomSheet(
-            //     id: widget.id,
-            //     data: expenseController.reportData.value,
-            //     text: AppString.addNewReportText,
-            //   ),
-            // ),
+
+            Obx(
+              () => ReportBottomSheet(
+                id: widget.id,
+                data: transactionController.reportData.value,
+                text: AppString.addNewReportText,
+              ),
+            ),
           ],
         ),
       ),

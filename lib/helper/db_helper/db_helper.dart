@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
   DBHelper._();
+
   static final DBHelper instance = DBHelper._();
 
   static Database? _database;
@@ -22,12 +23,13 @@ class DBHelper {
       path,
       version: 1,
       onCreate: (db, version) async {
+        await db.execute("CREATE TABLE category (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, image TEXT)");
         await db.execute(
-            "CREATE TABLE category (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, image TEXT)");
+          "CREATE TABLE expense (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price TEXT, date TEXT, currency TEXT, category_name TEXT, category_image TEXT, description TEXT, report_id TEXT, status TEXT)",
+        );
         await db.execute(
-            "CREATE TABLE expense (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price TEXT, date TEXT, currency TEXT, category_name TEXT, category_image TEXT, description TEXT, report_id TEXT, status TEXT)");
-        await db.execute(
-            "CREATE TABLE report (id INTEGER PRIMARY KEY AUTOINCREMENT, report_name TEXT, client_name TEXT, report_description TEXT, report_status TEXT, report_status_image TEXT, report_date TEXT)");
+          "CREATE TABLE report (id INTEGER PRIMARY KEY AUTOINCREMENT, report_name TEXT, client_name TEXT, report_description TEXT, report_status TEXT, report_status_image TEXT, report_date TEXT)",
+        );
 
         await db.insert("category", {"category": "All", "image": "😊"});
       },
@@ -118,24 +120,16 @@ class DBHelper {
         "currency": currency,
         "category_name": categoryName,
         "category_image": categoryImage,
-        "description": description
+        "description": description,
       },
       where: "id = ?",
       whereArgs: [id],
     );
   }
 
-  Future<void> updateExpenseReportData({required int id, required int reportId, required String status}) async {
+  Future<void> updateExpenseReportData({required int id, required int reportId}) async {
     final db = await database;
-    await db.update(
-      "expense",
-      {
-        "report_id": reportId,
-        "status": status,
-      },
-      where: "id = ?",
-      whereArgs: [id],
-    );
+    await db.update("expense", {"report_id": reportId,}, where: "id = ?", whereArgs: [id]);
   }
 
   Future<void> deleteExpense({required int id}) async {
@@ -173,6 +167,20 @@ class DBHelper {
     final db = await database;
     List<Map<String, dynamic>> dataList = await db.rawQuery("SELECT * FROM report WHERE id = ?", [id]);
     return dataList.isNotEmpty ? dataList.first : null;
+  }
+
+  Future fetchReportNameById({required int id}) async {
+    final db = await database;
+    List<Map<String, dynamic>> dataList = await db.rawQuery("SELECT * FROM report WHERE id = ?", [id]);
+    //print(dataList);
+    return dataList[0]['report_name'];
+  }
+
+  Future fetchReportStatusById({required int id}) async {
+    final db = await database;
+    List<Map<String, dynamic>> dataList = await db.rawQuery("SELECT * FROM report WHERE id = ?", [id]);
+    //print(dataList);
+    return dataList[0]['report_status'];
   }
 
   Future<List<Map>> readAllReports() async {

@@ -1,5 +1,7 @@
 import 'package:final_scanner_app/core/constant/app_image.dart';
+import 'package:final_scanner_app/feature/report/controller%20/report_controller.dart';
 import 'package:final_scanner_app/feature/transaction/view/transaction_details_view.dart';
+import 'package:final_scanner_app/feature/transaction/widget%20/transaction_to_report.dart';
 import 'package:final_scanner_app/feature/transaction_type_dialogue/expense/controller%20/expense_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +27,17 @@ class TransactionsView extends StatefulWidget {
 class _TransactionsViewState extends State<TransactionsView> {
   late TransactionController transactionController;
   late ExpenseController expenseController;
+  late ReportController reportController;
 
   @override
   void initState() {
     super.initState();
     transactionController = Get.put(TransactionController());
     expenseController = Get.put(ExpenseController());
+    reportController = Get.put(ReportController());
+    // Optionally fetch data immediately
+    transactionController.getReportData();
+    transactionController.expensesData();
   }
 
   @override
@@ -68,7 +75,7 @@ class _TransactionsViewState extends State<TransactionsView> {
       body: Obx(
         () =>
             transactionController.getFilteredExpenses().isEmpty
-                ? Center(child: AppText.manRope16(text: "data not found"))
+                ? Center(child: AppText.manRope16(text: "No expenses found", color: AppColor.greyColor50))
                 : Column(
                   children: [
                     Container(
@@ -146,18 +153,10 @@ class _TransactionsViewState extends State<TransactionsView> {
                                                           backgroundColor: Colors.transparent,
                                                           isScrollControlled: true,
                                                           builder: (BuildContext context) {
-                                                            return Container(
-                                                              height: 50,
-                                                              width: 50,
-                                                              color: AppColor.redColor,
+                                                            return DataBottomSheet(
+                                                              id: widget.id ?? 0,
+                                                              expenseIds: transactionController.selectedExpenses.value,
                                                             );
-                                                            //   DataBottomSheet(
-                                                            //   id: widget.id ?? 0,
-                                                            //   expenseIds: transactionController.selectedExpenses,
-                                                            //   data: expenseController.reportData.value
-                                                            //       .map((e) => Map<String, dynamic>.from(e))
-                                                            //       .toList(),
-                                                            // );
                                                           },
                                                         );
                                                       } else {
@@ -242,8 +241,8 @@ class _TransactionsViewState extends State<TransactionsView> {
                                                           "something Wrong",
                                                           "Pleas Select Expense",
                                                           snackPosition: SnackPosition.TOP,
-                                                          backgroundColor: Colors.redAccent,
-                                                          colorText: Colors.white,
+                                                          backgroundColor: AppColor.redColor,
+                                                          colorText: AppColor.light,
                                                           duration: Duration(seconds: 1),
                                                         );
                                                       }
@@ -355,15 +354,16 @@ class _TransactionsViewState extends State<TransactionsView> {
                                                                   DateFormat("d.M.yyyy").parse("${item['date']}"),
                                                                 ),
                                                               ),
-                                                              // AppText.manRope16(
-                                                              //   text: reportDataCache[reportId]?['report_name'] ?? "",
-                                                              //   color:
-                                                              //   reportDataCache[reportId]?['report_status'] == "Completed"
-                                                              //       ? AppColor.darkGreen
-                                                              //       : reportDataCache[reportId]?['report_status'] == "Sent"
-                                                              //       ? AppColor.blueShad
-                                                              //       : AppColor.redColor,
-                                                              // ),
+                                                              AppText.manRope16(
+                                                                text:
+                                                                    "${item['report_name'] == "No Report" ? "" : item['report_name']}",
+                                                                color:
+                                                                    item['report_status'] == "Completed"
+                                                                        ? AppColor.darkGreen
+                                                                        : item['report_status'] == "Sent"
+                                                                        ? AppColor.blueShad
+                                                                        : AppColor.redColor,
+                                                              ),
                                                             ],
                                                           ),
                                                           Spacer(),
@@ -403,7 +403,7 @@ class _TransactionsViewState extends State<TransactionsView> {
                                                               }
                                                               return AppColor.greyColor100;
                                                             }),
-                                                            checkColor: Colors.white,
+                                                            checkColor: AppColor.light,
                                                           ),
                                                         )
                                                         : SizedBox.shrink(),

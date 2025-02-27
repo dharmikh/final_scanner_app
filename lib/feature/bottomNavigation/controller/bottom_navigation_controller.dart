@@ -19,6 +19,7 @@ class BottomNavigationController extends GetxController {
   void onTabSelected(int index) {
     if (index == 2) return;
     currentIndex.value = index;
+    
   }
 
   void showBottomSheet() {

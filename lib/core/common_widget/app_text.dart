@@ -60,6 +60,15 @@ class AppText {
     return Text(text, style: GoogleFonts.manrope(fontSize: 13, color: color));
   }
 
+  // static Text manRope13OverFlow({required String text, Color color = Colors.black}) {
+  //   return Text(
+  //     text,
+  //     maxLines: 1,
+  //     overflow: TextOverflow.ellipsis,
+  //     style: GoogleFonts.mangrove(fontSize: 13, color: color),
+  //   );
+  // }
+
   static Text manRope10({required String text, Color? color}) {
     return Text(text, style: GoogleFonts.manrope(fontSize: 10, color: color));
   }

@@ -6,10 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BottomNavigationView extends StatelessWidget {
-  final BottomNavigationController bottomController = Get.put(BottomNavigationController());
-
+class BottomNavigationView extends StatefulWidget {
   BottomNavigationView({super.key});
+
+  @override
+  State<BottomNavigationView> createState() => _BottomNavigationViewState();
+}
+
+class _BottomNavigationViewState extends State<BottomNavigationView> {
+  final BottomNavigationController bottomController = Get.put(BottomNavigationController());
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +41,7 @@ class BottomNavigationView extends StatelessWidget {
       bottomNavigationBar: Obx(
         () => Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(height: 1.0, color: AppColor.greyColor50),
-            _buildBottomNavigationBar(),
-          ],
+          children: [Container(height: 1.0, color: AppColor.greyColor50), _buildBottomNavigationBar()],
         ),
       ),
     );
@@ -54,7 +56,11 @@ class BottomNavigationView extends StatelessWidget {
       child: BottomNavigationBar(
         elevation: 0.0,
         currentIndex: bottomController.currentIndex.value,
-        onTap: bottomController.onTabSelected,
+        onTap: (val) {
+          setState(() {bottomController.onTabSelected(val);});
+
+        },
+
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColor.primaryColor,
         unselectedItemColor: AppColor.greyColor100,

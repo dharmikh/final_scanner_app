@@ -26,8 +26,6 @@ class ExpenseBottomSheetController extends GetxController {
   }
 
 
-
-
   // Update expense report data
   Future<void> updateExpenseReportData({
     required int id,
@@ -37,7 +35,7 @@ class ExpenseBottomSheetController extends GetxController {
     await DBHelper.instance.updateExpenseReportData(
       id: id,
       reportId: reportId,
-      status: status,
+      //status: status,
     );
 
     await reportController.expensesToReportData();

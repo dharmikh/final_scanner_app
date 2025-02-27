@@ -25,6 +25,7 @@ class TransactionController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    reportData();
     expensesData();
     getReportData();
   }
@@ -39,29 +40,80 @@ class TransactionController extends GetxController {
   }
 
   Future<void> expensesData() async {
-    expenseData.value = await DBHelper.instance.readAllExpenses();
-    Map<String, List<Map<String, dynamic>>> groupedData = {};
+    try {
+      // Fetch expenses from database
+      List<Map> fetchedData = await DBHelper.instance.readAllExpenses();
 
-    for (var item in expenseData) {
-      String date = item['date'];
-      String formattedDate = DateFormat("MMMM yyyy").format(DateFormat("dd.MM.yyyy").parse(date));
+      // Create a new list to store updated items
+      List<Map<String, dynamic>> updatedExpenses = [];
 
-      if (!groupedData.containsKey(formattedDate)) {
-        groupedData[formattedDate] = [];
+      for (var item in fetchedData) {
+        // Create a copy of the item (to avoid modifying a read-only object)
+        Map<String, dynamic> newItem = Map<String, dynamic>.from(item);
+
+        if (newItem['report_id'] != null && newItem['report_id'].toString().isNotEmpty) {
+          try {
+            int reportId = int.tryParse(newItem['report_id'].toString()) ?? 0;
+
+            // Fetch report name
+            String reportName = await DBHelper.instance.fetchReportNameById(id: reportId);
+            newItem['report_name'] = reportName;
+
+            // Fetch report status
+            String reportStatus = await DBHelper.instance.fetchReportStatusById(id: reportId);
+            newItem['report_status'] = reportStatus;
+          } catch (e) {
+            //print("Error fetching report details for item: $newItem - Error: $e");
+            newItem['report_name'] = "Unknown";
+            newItem['report_status'] = "Unknown"; // Fallback value
+          }
+        } else {
+          newItem['report_name'] = "No Report";
+          newItem['report_status'] = "No Status"; // Handle empty report_id
+        }
+
+        updatedExpenses.add(newItem); // Add updated item to new list
       }
-      groupedData[formattedDate]!.add(item);
+
+      // Update the observable list (RxList)
+      expenseData.value = updatedExpenses;
+      //print("Updated Expense Data: $expenseData");
+
+      // Group expenses by formatted month-year
+      Map<String, List<Map<String, dynamic>>> groupedData = {};
+
+      for (var item in expenseData) {
+        if (item['date'] != null && item['date'].isNotEmpty) {
+          try {
+            String date = item['date'];
+            String formattedDate = DateFormat("MMMM yyyy").format(DateFormat("dd.MM.yyyy").parse(date));
+
+            if (!groupedData.containsKey(formattedDate)) {
+              groupedData[formattedDate] = [];
+            }
+            groupedData[formattedDate]!.add(item);
+          } catch (e) {
+            //print("Error parsing date for item: $item - Error: $e");
+          }
+        } else {
+          //print("Skipping item with null/empty date: $item");
+        }
+      }
+
+      expenseMapData.value = groupedData;
+      update();
+
+      //print("Grouped Expense Data: $expenseMapData");
+    } catch (e) {
+      //print("Error fetching expenses: $e");
     }
-    expenseMapData.value = groupedData;
-    update();
-    //print(groupedData);
-    //print(expenseData);
   }
 
   Future<void> getReportData() async {
     try {
       List<Map<dynamic, dynamic>> reports = await DBHelper.instance.readAllReports();
       reportData.assignAll(reports as Iterable<Map<String, dynamic>>);
-      print("Fetched Reports: ${reportData.length} items");
+      // print("Fetched Reports: ${reportData.length} items");
     } catch (e) {
       // print("Error fetching reports: $e");
     }
