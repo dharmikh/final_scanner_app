@@ -164,7 +164,7 @@ class _PaywallTwoViewState extends State<PaywallTwoView> {
                   RatingSubmitButton(
                     borderRadiusGeometry: BorderRadius.circular(6),
                     onTap: () {
-                      Get.off(() => PaywallTwoView());
+                      Get.off(() => PaywallThreeView());
                     },
                     text: AppString.subscribeText,
                   ),

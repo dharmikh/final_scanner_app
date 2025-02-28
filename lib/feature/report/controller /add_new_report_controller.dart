@@ -74,17 +74,10 @@ class NewReportController extends GetxController {
           id: id ?? 0,
         );
 
-        //await DBHelper.instance.updateExpense(id: id, name: name, price: price, date: date, currency: currency, categoryName: categoryName, categoryImage: categoryImage, description: description)
-
         await reportController.reportData();
         await transactionController.expensesData();
         await reportController.getReportData();
       }
-
-      // // Refresh data in other controllers
-      // await reportController.reportData();
-      // await transactionController.expensesData();
-      // await reportController.getReportData();
 
       // Close the current screen
       Get.back();

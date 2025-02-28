@@ -3,6 +3,7 @@ import 'package:final_scanner_app/core/common_widget/back_navigation_arrow.dart'
 import 'package:final_scanner_app/core/constant/app_color.dart';
 import 'package:final_scanner_app/core/constant/app_image.dart';
 import 'package:final_scanner_app/core/constant/app_string.dart';
+import 'package:final_scanner_app/feature/summary/controller/summery_controller.dart';
 import 'package:final_scanner_app/feature/transaction/controller/transaction_controller.dart';
 import 'package:final_scanner_app/feature/transaction/widget%20/report_bottom_sheet.dart';
 import 'package:final_scanner_app/helper/db_helper/db_helper.dart';
@@ -39,6 +40,7 @@ class ViewReceiptData extends StatefulWidget {
 
 class _ViewReceiptDataState extends State<ViewReceiptData> {
   TransactionController transactionController = Get.put(TransactionController());
+  SummaryController summaryController = Get.put(SummaryController());
 
   @override
   void initState() {
@@ -241,12 +243,11 @@ class _ViewReceiptDataState extends State<ViewReceiptData> {
                 ],
               ),
             ),
-
             Obx(
               () => ReportBottomSheet(
                 id: widget.id,
                 data: transactionController.reportData.value,
-                text: AppString.addNewReportText,
+                text: AppString.reportText,
               ),
             ),
           ],
@@ -283,9 +284,17 @@ class _ViewReceiptDataState extends State<ViewReceiptData> {
               onPressed: () async {
                 await DBHelper.instance.deleteExpense(id: widget.id);
                 await transactionController.expensesData();
-                Get.snackbar("Hello User", "${widget.title} is Delete");
-                Get.back();
-                Get.back();
+                summaryController.summaryData();
+                summaryController.chengIndex();
+
+                // Show SnackBar using ScaffoldMessenger
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("${widget.title} is Deleted"), duration: Duration(seconds: 2)));
+
+                // Close dialog
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               child: AppText.manRope16(text: AppString.deleteText, color: AppColor.primaryColor),
             ),

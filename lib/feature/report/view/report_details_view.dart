@@ -377,7 +377,7 @@ class _ReportDetailViewState extends State<ReportDetailView> {
             CupertinoDialogAction(
               isDefaultAction: true,
               onPressed: () {
-                Navigator.of(context).pop();
+                Get.back();
               },
               child: AppText.manRope16(text: AppString.cancelText, color: AppColor.greyColor100),
             ),
